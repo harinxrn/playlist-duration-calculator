@@ -1,0 +1,185 @@
+"""
+Playlist Duration Calculator
+=============================
+Analyzes a music playlist and outputs statistics including
+total duration, average song length, and longest/shortest tracks.
+
+Input Format:
+    First line : integer N (number of songs)
+    Next N lines: song_name duration  (duration in MM:SS format)
+
+Output Format:
+    PLAYLIST STATS
+    Total Songs: N
+    Total Duration: HH:MM:SS
+    Average Duration: MM:SS
+    Longest: song_name (MM:SS)
+    Shortest: song_name (MM:SS)
+
+Constraints:
+    1 <= N <= 500
+    00:01 <= duration <= 99:59
+    Song names are single word, alphanumeric
+
+Usage:
+    python script.py < input.txt
+    echo "4\nSunrise 03:45\nMidnight 05:12\nEcho 02:30\nDawn 04:18" | python script.py
+
+Author: Hari
+"""
+
+import sys
+
+
+def parse_duration(duration_str: str) -> int:
+    """
+    Convert a MM:SS duration string to total seconds.
+
+    Args:
+        duration_str: Duration in MM:SS format (e.g. "03:45")
+
+    Returns:
+        Total duration in seconds (e.g. 225)
+
+    Raises:
+        ValueError: If format is invalid or values out of range
+    """
+    parts = duration_str.split(':')
+    if len(parts) != 2:
+        raise ValueError(f"Invalid duration format: '{duration_str}'. Expected MM:SS")
+
+    minutes, seconds = int(parts[0]), int(parts[1])
+
+    if not (0 <= minutes <= 99) or not (0 <= seconds <= 59):
+        raise ValueError(f"Duration out of range: '{duration_str}'")
+    if minutes == 0 and seconds == 0:
+        raise ValueError("Duration must be at least 00:01")
+
+    return minutes * 60 + seconds
+
+
+def format_mmss(total_seconds: int) -> str:
+    """
+    Convert total seconds to MM:SS format string.
+
+    Args:
+        total_seconds: Duration in seconds (e.g. 236)
+
+    Returns:
+        Formatted string in MM:SS (e.g. "03:56")
+    """
+    minutes = total_seconds // 60
+    seconds = total_seconds % 60
+    return f"{minutes:02d}:{seconds:02d}"
+
+
+def format_hhmmss(total_seconds: int) -> str:
+    """
+    Convert total seconds to HH:MM:SS format string.
+
+    Args:
+        total_seconds: Duration in seconds (e.g. 945)
+
+    Returns:
+        Formatted string in HH:MM:SS (e.g. "00:15:45")
+    """
+    hours   = total_seconds // 3600
+    minutes = (total_seconds % 3600) // 60
+    seconds = total_seconds % 60
+    return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+
+
+def read_playlist() -> list[tuple[str, int]]:
+    """
+    Read playlist data from stdin.
+
+    Returns:
+        List of (song_name, duration_in_seconds) tuples
+
+    Raises:
+        ValueError: If N is out of range or any line is malformed
+    """
+    n = int(input().strip())
+
+    if not (1 <= n <= 500):
+        raise ValueError(f"Number of songs must be between 1 and 500, got {n}")
+
+    songs = []
+    for i in range(n):
+        line = input().strip()
+        parts = line.split()
+
+        if len(parts) != 2:
+            raise ValueError(f"Line {i + 1}: Expected 'song_name MM:SS', got '{line}'")
+
+        name, duration_str = parts[0], parts[1]
+        duration_secs = parse_duration(duration_str)
+        songs.append((name, duration_secs))
+
+    return songs
+
+
+def compute_stats(songs: list[tuple[str, int]]) -> dict:
+    """
+    Compute playlist statistics from a list of songs.
+
+    Args:
+        songs: List of (song_name, duration_in_seconds) tuples
+
+    Returns:
+        Dictionary with keys: total, average, longest, shortest
+    """
+    total_seconds = sum(secs for _, secs in songs)
+    average_seconds = total_seconds // len(songs)  # truncated, not rounded
+
+    # max/min naturally picks first occurrence on tie — matches problem requirement
+    longest  = max(songs, key=lambda x: x[1])
+    shortest = min(songs, key=lambda x: x[1])
+
+    return {
+        "total"   : total_seconds,
+        "average" : average_seconds,
+        "longest" : longest,
+        "shortest": shortest,
+    }
+
+
+def print_stats(n: int, stats: dict) -> None:
+    """
+    Print playlist statistics in the required output format.
+
+    Args:
+        n    : Total number of songs
+        stats: Dictionary returned by compute_stats()
+    """
+    longest_name,  longest_secs  = stats["longest"]
+    shortest_name, shortest_secs = stats["shortest"]
+
+    print("PLAYLIST STATS")
+    print(f"Total Songs: {n}")
+    print(f"Total Duration: {format_hhmmss(stats['total'])}")
+    print(f"Average Duration: {format_mmss(stats['average'])}")
+    print(f"Longest: {longest_name} ({format_mmss(longest_secs)})")
+    print(f"Shortest: {shortest_name} ({format_mmss(shortest_secs)})")
+
+
+def main() -> None:
+    """
+    Main entry point — orchestrates input, processing, and output.
+    """
+    try:
+        songs = read_playlist()
+        stats = compute_stats(songs)
+        print_stats(len(songs), stats)
+
+    except ValueError as e:
+        print(f"[Input Error] {e}", file=sys.stderr)
+        sys.exit(1)
+
+    except EOFError:
+        print("[Input Error] Unexpected end of input.", file=sys.stderr)
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
