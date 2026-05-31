@@ -3,7 +3,6 @@
 
 A Python CLI tool that analyzes music playlists — calculating total duration, average song length, and identifying the longest and shortest tracks from MM:SS formatted input.
 
----
 
 ## 📋 Features
 
@@ -14,7 +13,6 @@ A Python CLI tool that analyzes music playlists — calculating total duration, 
 - Handles ties by picking the first occurrence
 - Clean error handling for invalid input
 
----
 
 ## 🚀 Usage
 
@@ -32,7 +30,6 @@ Echo 02:30
 Dawn 04:18" | python script.py
 ```
 
----
 
 ## 📥 Input Format
 
@@ -48,7 +45,6 @@ song_name MM:SS
 - Song names are single word, alphanumeric
 - Duration is in `MM:SS` format
 
----
 
 ## 📤 Output Format
 
@@ -61,7 +57,6 @@ Longest: song_name (MM:SS)
 Shortest: song_name (MM:SS)
 ```
 
----
 
 ## 🧪 Example
 
@@ -84,7 +79,6 @@ Longest: Midnight (05:12)
 Shortest: Echo (02:30)
 ```
 
----
 
 ## ⚙️ Constraints
 
@@ -94,14 +88,12 @@ Shortest: Echo (02:30)
 | Duration  | 00:01 ≤ MM:SS ≤ 99:59  |
 | Names     | Single word, alphanumeric |
 
----
 
 ## 🛠️ Requirements
 
 - Python 3.10+
 - No external libraries — standard library only
 
----
 
 ## 📁 Project Structure
 
@@ -112,7 +104,6 @@ playlist-duration-calculator/
 └── README.md       # Project documentation
 ```
 
----
 
 ## 📝 How It Works
 
@@ -122,10 +113,3 @@ playlist-duration-calculator/
 4. Formats and prints the stats in the required format
 
 Average is **truncated** (not rounded) to whole seconds — e.g. `236.25s → 03:56`.
-
----
-
-## 👤 Author
-
-**Hari**  
-[github.com/hari](https://github.com/hari)
